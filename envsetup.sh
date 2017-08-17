@@ -204,6 +204,13 @@ function check_product()
         echo "Couldn't locate the top of the tree.  Try setting TOP." >&2
         return
     fi
+    if (echo -n $1 | grep -q -e "^rising_") ; then
+        RISING_BUILD=$(echo -n $1 | sed -e 's/^rising_//g')
+    else
+        RISING_BUILD=
+    fi
+    export RISING_BUILD
+
         TARGET_PRODUCT=$1 \
         TARGET_BUILD_VARIANT= \
         TARGET_BUILD_TYPE= \
@@ -821,6 +828,8 @@ function lunch()
         return 1
     fi
 
+    check_product $product
+
     TARGET_PRODUCT=$product \
     TARGET_BUILD_VARIANT=$variant \
     TARGET_PLATFORM_VERSION=$version \
@@ -848,6 +857,8 @@ function lunch()
     fi
 
     [[ -n "${ANDROID_QUIET_BUILD:-}" ]] || echo
+
+    fixup_common_out_dir
 
     set_stuff_for_environment
     [[ -n "${ANDROID_QUIET_BUILD:-}" ]] || printconfig
@@ -2208,6 +2219,25 @@ function fastbootinstall() {
 function check_fastboot() {
   fastboot getvar product 2>/dev/null
   return $?
+}
+
+function fixup_common_out_dir() {
+    common_out_dir=$(get_build_var OUT_DIR)/target/common
+    target_device=$(get_build_var TARGET_DEVICE)
+    common_target_out=common-${target_device}
+    if [ ! -z $RISING_FIXUP_COMMON_OUT ]; then
+        if [ -d ${common_out_dir} ] && [ ! -L ${common_out_dir} ]; then
+            mv ${common_out_dir} ${common_out_dir}-${target_device}
+            ln -s ${common_target_out} ${common_out_dir}
+        else
+            [ -L ${common_out_dir} ] && rm ${common_out_dir}
+            mkdir -p ${common_out_dir}-${target_device}
+            ln -s ${common_target_out} ${common_out_dir}
+        fi
+    else
+        [ -L ${common_out_dir} ] && rm ${common_out_dir}
+        mkdir -p ${common_out_dir}
+    fi
 }
 
 setup_ccache
