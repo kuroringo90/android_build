@@ -612,7 +612,7 @@ function chooseproduct()
     if [ "x$TARGET_PRODUCT" != x ] ; then
         default_value=$TARGET_PRODUCT
     else
-        default_value=aosp_arm
+        default_value=rising_arm
     fi
 
     export TARGET_BUILD_APPS=
@@ -774,8 +774,8 @@ function lunch()
         answer=$1
     else
         print_lunch_menu
-        echo "Which would you like? [aosp_arm-eng]"
-        echo -n "Pick from common choices above (e.g. 13) or specify your own (e.g. aosp_barbet-eng): "
+        echo "Which would you like? [rising_arm-eng]"
+        echo -n "Pick from common choices above (e.g. 13) or specify your own (e.g. rising_barbet-eng): "
         read answer
         used_lunch_menu=1
     fi
@@ -784,7 +784,7 @@ function lunch()
 
     if [ -z "$answer" ]
     then
-        selection=aosp_arm-eng
+        selection=rising_arm-eng
     elif (echo -n $answer | grep -q -e "^[0-9][0-9]*$")
     then
         local choices=($(TARGET_BUILD_APPS= get_build_var COMMON_LUNCH_CHOICES))
@@ -909,14 +909,14 @@ function tapas()
         return
     fi
 
-    local product=aosp_arm
+    local product=rising_arm
     case $arch in
-      x86)    product=aosp_x86;;
-      arm64)  product=aosp_arm64;;
-      x86_64) product=aosp_x86_64;;
+      x86)    product=rising_x86;;
+      arm64)  product=rising_arm64;;
+      x86_64) product=rising_x86_64;;
     esac
     if [ -n "$keys" ]; then
-        product=${product/aosp_/aosp_${keys}_}
+        product=${product/rising_/rising_${keys}_}
     fi;
 
     if [ -z "$variant" ]; then
