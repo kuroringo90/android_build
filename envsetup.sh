@@ -2153,6 +2153,23 @@ function ascend() {
     fi
 }
 
+function purge() {
+    local out_dir="$OUT"
+
+    if [ -z "$out_dir" ]; then
+        echo "Error: \$OUT is not set. Make sure you have sourced build/envsetup.sh."
+        return 1
+    fi
+
+    if [ -d "$out_dir" ]; then
+        echo "Purging $out_dir..."
+        rm -rf "$out_dir"/*
+        echo "Done."
+    else
+        echo "Error: $out_dir does not exist or is not a directory."
+    fi
+}
+
 setup_ccache
 validate_current_shell
 set_global_paths
