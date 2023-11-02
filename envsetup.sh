@@ -2170,6 +2170,46 @@ function purge() {
     fi
 }
 
+function fastbootinstall() {
+  local wipe_option=""
+
+  # Check if -w option is provided
+  if [ "$1" == "-w" ]; then
+    wipe_option="-w"
+  fi
+
+  # Device is not in fastboot mode, reboot it into bootloader
+  echo "Rebooting the device into bootloader..."
+  adb reboot bootloader
+
+  # Wait for the device to enter fastboot mode
+  sleep 5
+  check_fastboot
+  if [ $? -eq 0 ]; then
+    # Find the build file in $OUT directory
+    BUILD_FILE=$(ls -t $OUT/risingOS-*-fastboot.zip | head -n 1)
+    if [ -n "$BUILD_FILE" ]; then
+      if [ -n "$wipe_option" ]; then
+        # Install the build using fastboot update with wipe option
+        fastboot update -w $BUILD_FILE
+      else
+        # Install the build using fastboot update
+        fastboot update $BUILD_FILE
+      fi
+      echo "Build installed."
+    else
+      echo "No build file found in $OUT directory."
+    fi
+  else
+    echo "Device did not enter fastboot mode."
+  fi
+}
+
+function check_fastboot() {
+  fastboot getvar product 2>/dev/null
+  return $?
+}
+
 setup_ccache
 validate_current_shell
 set_global_paths
