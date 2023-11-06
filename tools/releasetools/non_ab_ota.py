@@ -229,7 +229,6 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("                                             ");
   script.Print("                                             ");
 
-  buildid = target_info.GetBuildProp("ro.rising.version")
   androidver = target_info.GetBuildProp("ro.build.version.release")
   buildidn = target_info.GetBuildProp("ro.build.id")
   buildday = target_info.GetBuildProp("ro.build.date")
@@ -237,7 +236,6 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   device = target_info.GetBuildProp("ro.build.product")
   manufacturer = target_info.GetBuildProp("ro.product.manufacturer")
   script.Print("***********************************************");
-  script.Print(" ROM version      : %s"%(buildid));
   script.Print(" Android version  : %s"%(androidver));
   script.Print(" Security patch   : %s"%(securep));
   script.Print(" Build date       : %s"%(buildday));
